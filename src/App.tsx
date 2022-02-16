@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styled from 'styled-components';
+import Options from './components/Options';
+import Player from './components/Player';
+import Controls from './components/Controls';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Options />
+      <Player />
+      <Controls />
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: grid;
+  grid-template: 
+    "options player" 1fr
+    "controls controls" 12rem / 25rem 1fr;
+
+  height: 100%;
+  
+  background-color: #f7f7f8;
+`;
 
 export default App;
