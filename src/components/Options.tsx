@@ -1,7 +1,44 @@
 import styled from 'styled-components';
+import RadioSelect from './RadioSelect';
+import { SpeedOption, speedOptions } from '../config/options/speed';
+import { ResolutionOption, resolutionOptions } from '../config/options/resolution';
 
-const Options = () => {
-  return <Container />
+
+export interface OptionsProps {
+  speed: SpeedOption,
+  selectSpeed: (option: SpeedOption) => void,
+  resolution: ResolutionOption,
+  selectResolution: (option: ResolutionOption) => void,
+}
+
+const Options = ({speed, selectSpeed, resolution, selectResolution}: OptionsProps) => {
+  return (
+    <Container>
+      <Title>Options</Title>
+
+      <Control>
+        <Label>Speed</Label>
+        <RadioSelect
+          id='speed'
+          options={speedOptions}
+          selected={speed}
+          onSelect={selectSpeed}
+          renderContent={option => <span>{option.factor.toFixed(1)}&times;</span>}
+        />
+      </Control>
+
+      <Control>
+        <Label>Resolution</Label>
+        <RadioSelect
+          id='resolution'
+          options={resolutionOptions}
+          selected={resolution}
+          onSelect={selectResolution}
+          renderContent={option => <span>{option.text}</span>}
+        />
+      </Control>
+    </Container>
+  )
 }
 
 const Container = styled.div`
@@ -9,6 +46,25 @@ const Container = styled.div`
   background-color: #ffffff;
   border-right: 1px solid #00000029;
   
+  padding: 1rem 2rem;
+`;
+
+const Title = styled.h1`
+  font-weight: bold;
+  font-size: 1.6rem;
+  color: #333;
+`;
+
+const Control = styled.div`
+  margin-bottom: 1.2rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.4rem;
+  
+  
+  color: #555;
 `;
 
 export default Options;
