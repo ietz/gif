@@ -19,7 +19,9 @@ const App = () => {
         selectResolution={setResolution}
       />
 
-      <Player />
+      <Player
+        playbackRate={speed.factor}
+      />
       <Controls />
     </Container>
   );

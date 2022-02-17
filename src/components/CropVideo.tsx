@@ -1,17 +1,24 @@
 import ReactCrop, { Crop } from 'react-image-crop';
 import styled from 'styled-components';
-import { CSSProperties, useRef, useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 
 
 export interface CropVideoProps {
   crop: VideoCrop;
   onChangeCrop: (crop: VideoCrop) => void;
   source: string;
+  playbackRate: number;
 }
 
-const CropVideo = ({crop, onChangeCrop, source}: CropVideoProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+const CropVideo = ({crop, onChangeCrop, source, playbackRate}: CropVideoProps) => {
   const [videoSize, setVideoSize] = useState<Size>();
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate, videoRef.current]);
 
   return (
     <ReactCropStyled
