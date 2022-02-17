@@ -26,10 +26,13 @@ const App = () => {
 }
 
 const Container = styled.div`
+  --options-width: 25rem;
+  --controls-height: 12rem;
+  
   display: grid;
   grid-template: 
     "options player" 1fr
-    "controls controls" 12rem / 25rem 1fr;
+    "controls controls" var(--controls-height) / var(--options-width) 1fr;
 
   height: 100%;
   

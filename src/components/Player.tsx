@@ -1,14 +1,18 @@
 import styled from 'styled-components';
+import { useState } from 'react';
+import 'react-image-crop/dist/ReactCrop.css'
+import CropVideo, { VideoCrop } from './CropVideo';
 
 const Player = () => {
+  const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
+
   return (
     <Container>
-      <Video muted autoPlay>
-        <source
-          src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-          type="video/mp4"
-        />
-      </Video>
+      <CropVideo
+        crop={crop}
+        onChangeCrop={setCrop}
+        source="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      />
     </Container>
   )
 }
@@ -22,14 +26,5 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const Video = styled.video`
-  width: 100%;
-  height: 100%;
-  
-  box-sizing: border-box;
-  padding: 2rem;
-  
-  object-fit: scale-down;
-`;
 
 export default Player;
