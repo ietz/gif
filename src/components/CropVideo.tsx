@@ -34,6 +34,7 @@ const CropVideo = ({crop, onChangeCrop, source, playbackRate}: CropVideoProps) =
           ref={videoRef}
           muted
           autoPlay
+          loop
           onLoadStart={e => e.target.dispatchEvent(new Event('medialoaded', { bubbles: true }))}
           onLoadedMetadata={() => setVideoSize(getHtmlVideoSize(videoRef.current!))}
         >
