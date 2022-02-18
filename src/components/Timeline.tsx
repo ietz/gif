@@ -1,6 +1,7 @@
-import { getTrackBackground, Range } from 'react-range';
+import { Range } from 'react-range';
 import React from 'react';
 import styled from 'styled-components';
+import { clamp, findChangedIndex } from '../utils';
 
 
 export interface VideoSlice {
@@ -14,43 +15,47 @@ export interface TimelineProps {
   position: number;
   onPositionChange: (position: number) => void;
   length: number;
+  className?: string;
+  minSliceLength: number;
 }
 
-const Timeline = ({slice, onSliceChange, position, onPositionChange, length}: TimelineProps) => {
+const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength}: TimelineProps) => {
   const values = [slice.start, position, slice.end];
 
   return (
     <Range
       values={values}
-      onChange={(values) => {
-        const newPosition = values[1];
-        const newSlice: VideoSlice = {start: values[0], end: values[2]};
-
-        if (slice.start !== newSlice.start || slice.end !== newSlice.end) {
+      onChange={(newValues) => {
+        const changed = findChangedIndex(values, newValues);
+        if (changed === 1) {
+          onPositionChange(clamp(newValues[1], slice.start, slice.end));
+        } else {
+          const newSlice = changed === 0
+            ? moveSliceStart(slice, newValues[0], minSliceLength, length)
+            : moveSliceEnd(slice, newValues[2], minSliceLength);
           onSliceChange(newSlice);
-        }
 
-        if (position !== newPosition) {
-          onPositionChange(newPosition);
+          onPositionChange(clamp(position, newSlice.start, newSlice.end));
         }
       }}
       step={1}
       min={0}
       max={length}
+      allowOverlap={true}
       renderTrack={({props: {style, ...restProps}, children}) => (
         <Track
           {...restProps}
+          className={className}
           style={{
             ...style,
-            background: getTrackBackground({
-              values,
-              colors: ['#ccc', '#3167cb', '#3167cb', '#ccc'],
-              min: 0,
-              max: 100,
-              rtl: false,
-            }),
           }}
         >
+          <TrackActiveRegion
+            style={{
+              left: `${slice.start / length * 100}%`,
+              right: `${100 - slice.end / length * 100}%`,
+            }}
+          />
           {children}
         </Track>
       )}
@@ -63,9 +68,40 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length}: Ti
   )
 }
 
+const moveSliceStart = (slice: VideoSlice, target: number, minSliceLength: number, maxEnd: number): VideoSlice => {
+  const newStart = Math.min(target, maxEnd - minSliceLength);
+  return {
+    start: newStart,
+    end: Math.max(slice.end, newStart + minSliceLength),
+  };
+};
+
+const moveSliceEnd = (slice: VideoSlice, target: number, minSliceLength: number): VideoSlice => {
+  const newEnd = Math.max(target, minSliceLength);
+  return {
+    start: Math.min(slice.start, target - minSliceLength),
+    end: newEnd,
+  };
+};
+
 const Track = styled.div`
+  --border-radius: 0.3rem;
+  
   height: 3.2rem;
   width: 100%;
+  background-color: #eee;
+  box-shadow: inset 0 0 0 1px #ddd;
+  border-radius: var(--border-radius);
+`;
+
+const TrackActiveRegion = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  
+  pointer-events: none;
+  border-radius: var(--border-radius);
+  background-color: var(--primary);
 `;
 
 const ThumbContainer = styled.div`
@@ -92,7 +128,7 @@ export interface ThumbCenterProps {
 const ThumbCenter = styled.div<ThumbCenterProps>`
   width: 0.15rem;
   height: 1rem;
-  background-color: ${props => props.isDragged ? '#00b' : '#999'};
+  background-color: ${props => props.isDragged ? 'var(--primary)' : '#999'};
 `;
 
 const PositionIndicatorContainer = styled.div`
@@ -111,7 +147,7 @@ const PositionIndicator = styled.div`
   position: absolute;
   top: calc(-1 * var(--indicator-size) - var(--margin-bottom));
 
-  border-top: var(--indicator-size) solid red;
+  border-top: var(--indicator-size) solid var(--primary);
   border-left: var(--indicator-size) solid transparent;
   border-right: var(--indicator-size) solid transparent;
 `;

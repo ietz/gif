@@ -59,7 +59,7 @@ const HiddenInput = styled.input`
   }
   
   &:checked + ${Label} {
-    border-color: #5c9fe7;;
+    border-color: var(--primary);
   }
 `;
 

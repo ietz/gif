@@ -28,6 +28,8 @@ const App = () => {
 }
 
 const Container = styled.div`
+  --primary: #5c9fe7;
+  
   --options-width: 25rem;
   --controls-height: 12rem;
   

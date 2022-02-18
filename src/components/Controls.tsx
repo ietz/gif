@@ -14,6 +14,7 @@ const Controls = () => {
         position={position}
         onPositionChange={setPosition}
         length={100}
+        minSliceLength={10}
       />
     </Container>
   )
