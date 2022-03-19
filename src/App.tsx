@@ -24,6 +24,7 @@ const App = () => {
       <Player
         playbackRate={speed.factor}
         loopRegion={loopRegion}
+        onTimeUpdate={setPosition}
       />
 
       <Controls>

@@ -8,14 +8,24 @@ import { VideoSlice } from './Timeline';
 export interface PlayerProps {
   playbackRate: number;
   loopRegion: VideoSlice;
+  onTimeUpdate: (time: number) => void;
 }
 
-const Player = ({playbackRate, loopRegion}: PlayerProps) => {
+const Player = ({playbackRate, loopRegion, onTimeUpdate}: PlayerProps) => {
   const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
 
   const videoRef = useRef<HTMLVideoElement>(null);
   usePlaybackRate(videoRef, playbackRate);
   useLoopRegion(videoRef, loopRegion);
+
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      const listener = () => onTimeUpdate(videoElement.currentTime);
+      videoElement.addEventListener('timeupdate', listener);
+      return () => videoElement.removeEventListener('timeupdate', listener);
+    }
+  }, [onTimeUpdate, videoRef.current])
 
   return (
     <Container>
