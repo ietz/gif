@@ -9,13 +9,14 @@ export interface PlayerProps {
   playbackRate: number;
   loopRegion: VideoSlice;
   onTimeUpdate: (time: number) => void;
+  onDurationChange: (duration: number) => void,
 }
 
 export interface PlayerElement {
   setTime: (time: number) => void;
 }
 
-const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion, onTimeUpdate}, ref) => {
+const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion, onTimeUpdate, onDurationChange}, ref) => {
   const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -39,7 +40,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion
       videoElement.addEventListener('timeupdate', listener);
       return () => videoElement.removeEventListener('timeupdate', listener);
     }
-  }, [onTimeUpdate, videoRef.current])
+  }, [onTimeUpdate, videoRef.current]);
 
   return (
     <Container>
@@ -49,6 +50,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion
         muted
         crop={crop}
         onChangeCrop={setCrop}
+        onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
         source="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
       />
     </Container>

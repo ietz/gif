@@ -46,9 +46,9 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
       renderComponent={
         <Video
           ref={ref}
+          {...videoProps}
           onLoadStart={onLoadStart}
           onLoadedMetadata={onLoadedMetadata}
-          {...videoProps}
         >
           <source src={source} />
         </Video>

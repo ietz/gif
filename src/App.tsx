@@ -7,8 +7,9 @@ import { defaultResolutionOption } from './config/options/resolution';
 import Timeline, { VideoSlice } from './components/Timeline';
 
 const App = () => {
-  const [position, setPosition] = useState(30);
-  const [loopRegion, setLoopRegion] = useState<VideoSlice>({start: 20, end: 80});
+  const [duration, setDuration] = useState(100);
+  const [position, setPosition] = useState(0);
+  const [loopRegion, setLoopRegion] = useState<VideoSlice>({start: 0, end: 100});
   const [speed, setSpeed] = useState(defaultSpeedOption);
   const [resolution, setResolution] = useState(defaultResolutionOption);
 
@@ -35,6 +36,10 @@ const App = () => {
         playbackRate={speed.factor}
         loopRegion={loopRegion}
         onTimeUpdate={setPosition}
+        onDurationChange={(newDuration) => {
+          setDuration(newDuration);
+          setLoopRegion({start: 0, end: newDuration});
+        }}
       />
 
       <Controls>
@@ -43,7 +48,7 @@ const App = () => {
           onSliceChange={setLoopRegion}
           position={position}
           onPositionChange={onSeek}
-          length={100}
+          length={duration}
           minSliceLength={10}
         />
       </Controls>
