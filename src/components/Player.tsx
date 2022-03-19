@@ -51,7 +51,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion
         crop={crop}
         onChangeCrop={setCrop}
         onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
-        source="https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/dash/ForBiggerBlazesVideo.mp4"
+        source="demo.mp4"
       />
     </Container>
   )

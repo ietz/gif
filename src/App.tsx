@@ -5,6 +5,7 @@ import Player, { PlayerElement } from './components/Player';
 import { defaultSpeedOption } from './config/options/speed';
 import { defaultResolutionOption } from './config/options/resolution';
 import Timeline, { VideoSlice } from './components/Timeline';
+import { Converter } from './common/convert';
 
 const App = () => {
   const [duration, setDuration] = useState(100);
@@ -52,9 +53,25 @@ const App = () => {
           minSliceLength={10}
           step={0.05}
         />
+        <button
+          type='button'
+          onClick={download}
+        >
+          Convert
+        </button>
       </Controls>
     </Container>
   );
+}
+
+const download = async () => {
+  const converter = new Converter('https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js');
+  await converter.load();
+  const url = await converter.convert({
+    slice: {start: 2, end: 5},
+    framerate: 20,
+  });
+  console.log(url);
 }
 
 const Container = styled.div`
