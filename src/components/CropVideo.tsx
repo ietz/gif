@@ -1,24 +1,35 @@
 import ReactCrop, { Crop } from 'react-image-crop';
 import styled from 'styled-components';
-import { CSSProperties, forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import {
+  CSSProperties,
+  DetailedHTMLProps,
+  forwardRef,
+  ReactEventHandler,
+  useMemo,
+  useState,
+  VideoHTMLAttributes
+} from 'react';
 
 
-export interface CropVideoProps {
+export interface CropVideoProps extends Omit<DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>, 'ref'> {
   crop: VideoCrop;
   onChangeCrop: (crop: VideoCrop) => void;
   source: string;
 }
 
-const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeCrop, source}, ref) => {
+const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeCrop, source, ...videoProps}, ref) => {
   const [videoSize, setVideoSize] = useState<Size>();
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const onLoadStart = useMemo(() => combineHandlers(
+    (event) => event.target.dispatchEvent(new Event('medialoaded', { bubbles: true })),
+    videoProps.onLoadStart,
+  ), [videoProps.onLoadStart]);
 
-  useImperativeHandle(
-    ref,
-    () => videoRef.current as HTMLVideoElement,
-    [videoRef.current],
-  )
+  const onLoadedMetadata = useMemo(() => combineHandlers(
+    (event) => setVideoSize(getHtmlVideoSize(event.currentTarget)),
+    videoProps.onLoadStart,
+  ), [videoProps.onLoadStart, setVideoSize]);
+
 
   return (
     <ReactCropStyled
@@ -31,12 +42,10 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
       style={{'--aspect-ratio': videoSize ? videoSize.width / videoSize.height : undefined} as CSSAspectRatioStyle}
       renderComponent={
         <Video
-          ref={videoRef}
-          muted
-          autoPlay
-          loop
-          onLoadStart={e => e.target.dispatchEvent(new Event('medialoaded', { bubbles: true }))}
-          onLoadedMetadata={() => setVideoSize(getHtmlVideoSize(videoRef.current!))}
+          ref={ref}
+          onLoadStart={onLoadStart}
+          onLoadedMetadata={onLoadedMetadata}
+          {...videoProps}
         >
           <source src={source} />
         </Video>
@@ -44,6 +53,20 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
     />
   )
 });
+
+const combineHandlers = (
+  handler: ReactEventHandler<HTMLVideoElement>,
+  parentHandler: ReactEventHandler<HTMLVideoElement> | undefined
+): ReactEventHandler<HTMLVideoElement> => {
+  if (!parentHandler) {
+    return handler;
+  }
+
+  return event => {
+    handler(event);
+    parentHandler(event);
+  }
+}
 
 export interface Size {
   width: number;

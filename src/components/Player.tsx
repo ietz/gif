@@ -45,6 +45,8 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion
     <Container>
       <CropVideo
         ref={videoRef}
+        autoPlay
+        muted
         crop={crop}
         onChangeCrop={setCrop}
         source="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
