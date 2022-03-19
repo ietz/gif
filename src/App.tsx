@@ -93,7 +93,7 @@ const App = () => {
           position={position}
           onPositionChange={onSeek}
           length={duration}
-          minSliceLength={10}
+          minSliceLength={1}
           step={0.05}
         />
       </Controls>
