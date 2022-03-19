@@ -2,17 +2,20 @@ import styled from 'styled-components';
 import { RefObject, useEffect, useRef, useState } from 'react';
 import 'react-image-crop/dist/ReactCrop.css'
 import CropVideo, { VideoCrop } from './CropVideo';
+import { VideoSlice } from './Timeline';
 
 
 export interface PlayerProps {
   playbackRate: number;
+  loopRegion: VideoSlice;
 }
 
-const Player = ({playbackRate}: PlayerProps) => {
+const Player = ({playbackRate, loopRegion}: PlayerProps) => {
   const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
 
   const videoRef = useRef<HTMLVideoElement>(null);
   usePlaybackRate(videoRef, playbackRate);
+  useLoopRegion(videoRef, loopRegion);
 
   return (
     <Container>
@@ -32,6 +35,20 @@ const usePlaybackRate = (videoRef: RefObject<HTMLVideoElement>, playbackRate: nu
       videoRef.current.playbackRate = playbackRate;
     }
   }, [playbackRate, videoRef.current]);
+}
+
+const useLoopRegion = (videoRef: RefObject<HTMLVideoElement>, loopRegion: VideoSlice) => {
+  useEffect(() => {
+    const setPositionInsideLoop = () => {
+      const videoElement = videoRef.current;
+      if (videoElement && (videoElement.currentTime < loopRegion.start || loopRegion.end <= videoElement.currentTime)) {
+        videoElement.currentTime = loopRegion.start;
+      }
+    }
+
+    const intervalId = setInterval(setPositionInsideLoop, 20);
+    return () => clearInterval(intervalId);
+  }, [videoRef, loopRegion]);
 }
 
 const Container = styled.div`
