@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import 'react-image-crop/dist/ReactCrop.css'
 import CropVideo, { VideoCrop } from './CropVideo';
 
@@ -12,12 +12,7 @@ const Player = ({playbackRate}: PlayerProps) => {
   const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = playbackRate;
-    }
-  }, [playbackRate, videoRef.current]);
-
+  usePlaybackRate(videoRef, playbackRate);
 
   return (
     <Container>
@@ -29,6 +24,14 @@ const Player = ({playbackRate}: PlayerProps) => {
       />
     </Container>
   )
+}
+
+const usePlaybackRate = (videoRef: RefObject<HTMLVideoElement>, playbackRate: number) => {
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate, videoRef.current]);
 }
 
 const Container = styled.div`
