@@ -8,6 +8,7 @@ import Timeline, { VideoSlice } from './components/Timeline';
 import { Converter } from './common/convert';
 import { DropHint } from './components/DropHint';
 import { useDropzone } from 'react-dropzone';
+import { ConvertButton } from './components/ConvertButton';
 
 const App = () => {
   const [videoFile, setVideoFile] = useState<VideoFile>();
@@ -43,12 +44,16 @@ const App = () => {
 
   return (
     <Container {...getRootProps()}>
-      <Options
-        speed={speed}
-        selectSpeed={setSpeed}
-        resolution={resolution}
-        selectResolution={setResolution}
-      />
+      <Sidebar>
+        <Options
+          speed={speed}
+          selectSpeed={setSpeed}
+          resolution={resolution}
+          selectResolution={setResolution}
+        />
+
+        <ConvertButton onClick={convert} />
+      </Sidebar>
 
       <PlayerArea>
         {!videoFile ? <DropHint isDragActive={isDragActive} /> : (
@@ -77,12 +82,6 @@ const App = () => {
           minSliceLength={10}
           step={0.05}
         />
-        <button
-          type='button'
-          onClick={download}
-        >
-          Convert
-        </button>
       </Controls>
 
       <input {...getInputProps()} />
@@ -95,7 +94,7 @@ interface VideoFile {
   url: string;
 }
 
-const download = async () => {
+const convert = async () => {
   const converter = new Converter('https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js');
   await converter.load();
   const url = await converter.convert({
@@ -113,13 +112,24 @@ const Container = styled.div`
   
   display: grid;
   grid-template: 
-    "options player" 1fr
+    "sidebar player" 1fr
     "controls controls" var(--controls-height) / var(--options-width) 1fr;
 
   height: 100%;
   
   background-color: #f7f7f8;
   color: #444;
+`;
+
+const Sidebar = styled.div`
+  grid-area: sidebar;
+  background-color: #ffffff;
+  border-right: 1px solid #00000029;
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 2rem;
 `;
 
 const Controls = styled.div`

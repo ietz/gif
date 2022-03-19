@@ -13,7 +13,7 @@ export interface OptionsProps {
 
 const Options = ({speed, selectSpeed, resolution, selectResolution}: OptionsProps) => {
   return (
-    <Container>
+    <div>
       <Title>Options</Title>
 
       <Control>
@@ -37,17 +37,9 @@ const Options = ({speed, selectSpeed, resolution, selectResolution}: OptionsProp
           renderContent={option => <span>{option.text}</span>}
         />
       </Control>
-    </Container>
+    </div>
   )
 }
-
-const Container = styled.div`
-  grid-area: options;
-  background-color: #ffffff;
-  border-right: 1px solid #00000029;
-  
-  padding: 1rem 2rem;
-`;
 
 const Title = styled.h1`
   font-weight: bold;
