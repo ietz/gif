@@ -50,6 +50,7 @@ const App = () => {
           onPositionChange={onSeek}
           length={duration}
           minSliceLength={10}
+          step={0.05}
         />
       </Controls>
     </Container>

@@ -17,9 +17,10 @@ export interface TimelineProps {
   length: number;
   className?: string;
   minSliceLength: number;
+  step: number;
 }
 
-const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength}: TimelineProps) => {
+const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step}: TimelineProps) => {
   const values = [slice.start, position, slice.end];
 
   return (
@@ -38,7 +39,7 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
           onPositionChange(clamp(position, newSlice.start, newSlice.end));
         }
       }}
-      step={1}
+      step={step}
       min={0}
       max={length}
       allowOverlap={true}
