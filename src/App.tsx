@@ -5,10 +5,11 @@ import Player, { PlayerElement } from './components/Player';
 import { defaultSpeedOption } from './config/options/speed';
 import { defaultResolutionOption } from './config/options/resolution';
 import Timeline, { VideoSlice } from './components/Timeline';
-import { Converter } from './common/convert';
+import { Converter, replaceFileExtension } from './common/convert';
 import { DropHint } from './components/DropHint';
 import { useDropzone } from 'react-dropzone';
 import { ConvertButton } from './components/ConvertButton';
+import { download } from './common/download';
 
 const App = () => {
   const [videoFile, setVideoFile] = useState<VideoFile>();
@@ -26,12 +27,14 @@ const App = () => {
 
   const convert = useCallback(async () => {
     if (videoFile) {
-      const url = await converter.convert({
-        file: videoFile.file,
-        slice: loopRegion,
-        framerate: 20,
-      });
-      console.log(url);
+      download(
+        await converter.convert({
+          file: videoFile.file,
+          slice: loopRegion,
+          framerate: 20,
+        }),
+        replaceFileExtension(videoFile.file.name, 'gif'),
+      )
     }
   }, [videoFile, converter, loopRegion]);
 
