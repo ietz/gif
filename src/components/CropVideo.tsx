@@ -39,7 +39,10 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
         if (videoSize === undefined) throw Error('Video size is unknown');
         onChangeCrop(percentageCropToVideoCrop(newPctCrop as PercentageCrop, videoSize));
       }}
-      style={{'--aspect-ratio': videoSize ? videoSize.width / videoSize.height : undefined} as CSSAspectRatioStyle}
+      style={{
+        '--video-width': videoSize ? videoSize.width : undefined,
+        '--video-height': videoSize ? videoSize.height : undefined,
+      } as CSSVideoSizeStyle}
       renderComponent={
         <Video
           ref={ref}
@@ -107,20 +110,20 @@ const Video = styled.video`
   max-width: 100%;
 `;
 
-export interface CSSAspectRatioStyle extends CSSProperties {
-  '--aspect-ratio': number;
+export interface CSSVideoSizeStyle extends CSSProperties {
+  '--video-width': number;
+  '--video-height': number;
 }
 
 const ReactCropStyled = styled(ReactCrop)`
   --padding: 2rem;
-  --max-width: calc(100vw - var(--options-width) - 2 * var(--padding));
-  --max-height: calc(100vh - var(--controls-height) - 2 * var(--padding));
+  --aspect-ratio: calc(var(--video-width) / var(--video-height));
+  --max-width: calc(min(var(--video-width) * 1px, 100vw - var(--options-width) - 2 * var(--padding)));
+  --max-height: calc(min(var(--video-height) * 1px, 100vh - var(--controls-height) - 2 * var(--padding)));
   width: var(--max-width);
   height: calc(var(--max-width) / var(--aspect-ratio));
   max-width: calc(var(--max-height) * var(--aspect-ratio));
   max-height: var(--max-height);
-  
-  background-color: black;
 `;
 
 export default CropVideo;
