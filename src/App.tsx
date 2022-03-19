@@ -77,6 +77,11 @@ const Controls = styled.div`
   grid-area: controls;
   background-color: #ffffff;
   border-top: 1px solid #00000029;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5rem;
 `;
 
 export default App;
