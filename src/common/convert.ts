@@ -10,7 +10,7 @@ export class Converter {
 
   load = () => this.ffmpeg.load();
 
-  convert = async ({file, slice, framerate}: ConvertOptions): Promise<string> => {
+  convert = async ({file, slice, framerate, playbackRate, scaleFactor}: ConvertOptions): Promise<string> => {
     console.log('@@@@ write file')
     this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
     console.log('@@@@ run ffmpeg')
@@ -22,7 +22,7 @@ export class Converter {
       '-i',
       file.name,
       '-vf',
-      `setpts=PTS/1.5,fps=${framerate},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
+      `scale=iw*${scaleFactor}:ih*${scaleFactor},setpts=PTS/${playbackRate},fps=${framerate},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
       '-loop',
       '0',
       'output.gif',
@@ -42,5 +42,7 @@ export const replaceFileExtension = (fileName: string, extension: string): strin
 export interface ConvertOptions {
   file: File;
   slice: VideoSlice;
+  playbackRate: number;
+  scaleFactor: number;
   framerate: number;
 }

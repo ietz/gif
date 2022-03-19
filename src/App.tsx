@@ -31,12 +31,14 @@ const App = () => {
         await converter.convert({
           file: videoFile.file,
           slice: loopRegion,
+          scaleFactor: resolution.factor,
+          playbackRate: speed.factor,
           framerate: 20,
         }),
         replaceFileExtension(videoFile.file.name, 'gif'),
       )
     }
-  }, [videoFile, converter, loopRegion]);
+  }, [videoFile, converter, resolution, speed, loopRegion]);
 
   const onDropFile = useCallback((files: File[]) => {
     const file = files[0];
