@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Options from './components/Options';
 import Player, { PlayerElement } from './components/Player';
@@ -18,12 +18,26 @@ const App = () => {
   const [speed, setSpeed] = useState(defaultSpeedOption);
   const [resolution, setResolution] = useState(defaultResolutionOption);
 
+  const converter = useMemo(() => {
+    const conv = new Converter('https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js');
+    conv.load();
+    return conv;
+  }, []);
+
+  const convert = useCallback(async () => {
+    if (videoFile) {
+      const url = await converter.convert({
+        file: videoFile.file,
+        slice: loopRegion,
+        framerate: 20,
+      });
+      console.log(url);
+    }
+  }, [videoFile, converter, loopRegion]);
+
   const onDropFile = useCallback((files: File[]) => {
     const file = files[0];
-    setVideoFile({
-      name: file.name,
-      url: URL.createObjectURL(file),
-    })
+    setVideoFile({file, url: URL.createObjectURL(file)})
   }, []);
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
@@ -90,18 +104,8 @@ const App = () => {
 }
 
 interface VideoFile {
-  name: string;
+  file: File;
   url: string;
-}
-
-const convert = async () => {
-  const converter = new Converter('https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js');
-  await converter.load();
-  const url = await converter.convert({
-    slice: {start: 2, end: 5},
-    framerate: 20,
-  });
-  console.log(url);
 }
 
 const Container = styled.div`

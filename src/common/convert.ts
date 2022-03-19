@@ -10,32 +10,34 @@ export class Converter {
 
   load = () => this.ffmpeg.load();
 
-  convert = async (options: ConvertOptions): Promise<string> => {
+  convert = async ({file, slice, framerate}: ConvertOptions): Promise<string> => {
+    const fileStem = file.name.replace(/\.[^/.]+$/, "");
+    const outputFileName = `${fileStem}.gif`;
     console.log('@@@@ write file')
-    this.ffmpeg.FS('writeFile', 'demo.mp4', await fetchFile('demo.mp4'));
+    this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
     console.log('@@@@ run ffmpeg')
     await this.ffmpeg.run(
       '-ss',
-      options.slice.start.toString(),
+      slice.start.toString(),
       '-to',
-      options.slice.end.toString(),
+      slice.end.toString(),
       '-i',
-      'demo.mp4',
+      file.name,
       '-vf',
-      `setpts=PTS/1.5,fps=${options.framerate},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
+      `setpts=PTS/1.5,fps=${framerate},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
       '-loop',
       '0',
-      'output.gif'
+      outputFileName,
     );
     console.log('@@@@ read file')
-    const data = this.ffmpeg.FS('readFile', 'output.gif');
+    const data = this.ffmpeg.FS('readFile', outputFileName);
     console.log('@@@@ create blob')
     return URL.createObjectURL(new Blob([data.buffer], {type: 'image/gif'}));
   }
-
 }
 
 export interface ConvertOptions {
+  file: File;
   slice: VideoSlice;
   framerate: number;
 }
