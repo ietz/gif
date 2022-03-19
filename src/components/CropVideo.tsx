@@ -27,8 +27,8 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
 
   const onLoadedMetadata = useMemo(() => combineHandlers(
     (event) => setVideoSize(getHtmlVideoSize(event.currentTarget)),
-    videoProps.onLoadStart,
-  ), [videoProps.onLoadStart, setVideoSize]);
+    videoProps.onLoadedMetadata,
+  ), [videoProps.onLoadedMetadata, setVideoSize]);
 
 
   return (
