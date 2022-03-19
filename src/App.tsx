@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Options from './components/Options';
-import Player from './components/Player';
+import Player, { PlayerElement } from './components/Player';
 import { defaultSpeedOption } from './config/options/speed';
 import { defaultResolutionOption } from './config/options/resolution';
 import Timeline, { VideoSlice } from './components/Timeline';
@@ -11,6 +11,15 @@ const App = () => {
   const [loopRegion, setLoopRegion] = useState<VideoSlice>({start: 20, end: 80});
   const [speed, setSpeed] = useState(defaultSpeedOption);
   const [resolution, setResolution] = useState(defaultResolutionOption);
+
+  const playerRef = useRef<PlayerElement>(null);
+
+  const onSeek = useCallback((newPosition: number) => {
+    if (playerRef.current) {
+      setPosition(newPosition);
+      playerRef.current.setTime(newPosition);
+    }
+  }, [playerRef, setPosition]);
 
   return (
     <Container>
@@ -22,6 +31,7 @@ const App = () => {
       />
 
       <Player
+        ref={playerRef}
         playbackRate={speed.factor}
         loopRegion={loopRegion}
         onTimeUpdate={setPosition}
@@ -32,7 +42,7 @@ const App = () => {
           slice={loopRegion}
           onSliceChange={setLoopRegion}
           position={position}
-          onPositionChange={setPosition}
+          onPositionChange={onSeek}
           length={100}
           minSliceLength={10}
         />

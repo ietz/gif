@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import { forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import 'react-image-crop/dist/ReactCrop.css'
 import CropVideo, { VideoCrop } from './CropVideo';
 import { VideoSlice } from './Timeline';
@@ -11,12 +11,26 @@ export interface PlayerProps {
   onTimeUpdate: (time: number) => void;
 }
 
-const Player = ({playbackRate, loopRegion, onTimeUpdate}: PlayerProps) => {
+export interface PlayerElement {
+  setTime: (time: number) => void;
+}
+
+const Player = forwardRef<PlayerElement, PlayerProps>(({playbackRate, loopRegion, onTimeUpdate}, ref) => {
   const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
 
   const videoRef = useRef<HTMLVideoElement>(null);
   usePlaybackRate(videoRef, playbackRate);
   useLoopRegion(videoRef, loopRegion);
+
+  useImperativeHandle(ref, () => ({
+    setTime: (time: number) => {
+      if (!videoRef.current) {
+        throw Error('Video player is not initialized');
+      }
+
+      videoRef.current.currentTime = time;
+    }
+  }), [videoRef]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -37,7 +51,7 @@ const Player = ({playbackRate, loopRegion, onTimeUpdate}: PlayerProps) => {
       />
     </Container>
   )
-}
+})
 
 const usePlaybackRate = (videoRef: RefObject<HTMLVideoElement>, playbackRate: number) => {
   useEffect(() => {
