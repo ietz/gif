@@ -5,15 +5,13 @@ export class Converter {
   private ffmpeg: FFmpeg;
 
   constructor(corePath: string) {
-    this.ffmpeg = createFFmpeg({log: true, corePath});
+    this.ffmpeg = createFFmpeg({corePath});
   }
 
   load = () => this.ffmpeg.load();
 
   convert = async ({file, slice, framerate, playbackRate, scaleFactor}: ConvertOptions): Promise<string> => {
-    console.log('@@@@ write file')
     this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
-    console.log('@@@@ run ffmpeg')
     await this.ffmpeg.run(
       '-ss',
       slice.start.toString(),
@@ -27,9 +25,7 @@ export class Converter {
       '0',
       'output.gif',
     );
-    console.log('@@@@ read file')
     const data = this.ffmpeg.FS('readFile', 'output.gif');
-    console.log('@@@@ create blob')
     return URL.createObjectURL(new Blob([data.buffer], {type: 'image/gif'}));
   }
 }
