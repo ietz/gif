@@ -37,8 +37,9 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
     <CropVideo
       ref={videoRef}
       source={source}
-      autoPlay
       muted
+      autoPlay
+      loop
       crop={crop}
       onChangeCrop={onChangeCrop}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
