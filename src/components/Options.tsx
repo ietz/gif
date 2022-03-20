@@ -13,9 +13,7 @@ export interface OptionsProps {
 
 const Options = ({speed, selectSpeed, resolution, selectResolution}: OptionsProps) => {
   return (
-    <div>
-      <Title>Options</Title>
-
+    <>
       <Control>
         <Label>Speed</Label>
         <RadioSelect
@@ -37,15 +35,9 @@ const Options = ({speed, selectSpeed, resolution, selectResolution}: OptionsProp
           renderContent={option => <span>{option.text}</span>}
         />
       </Control>
-    </div>
+    </>
   )
 }
-
-const Title = styled.h1`
-  font-weight: bold;
-  font-size: 1.6rem;
-  color: #333;
-`;
 
 const Control = styled.div`
   margin-bottom: 1.2rem;

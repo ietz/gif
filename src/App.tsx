@@ -11,6 +11,7 @@ import { useDropzone } from 'react-dropzone';
 import { ConvertButton } from './components/ConvertButton';
 import { download } from './common/download';
 import { VideoCrop } from './components/CropVideo';
+import { AppInfo } from './components/AppInfo';
 
 const App = () => {
   const [videoFile, setVideoFile] = useState<VideoFile>();
@@ -70,12 +71,19 @@ const App = () => {
   return (
     <Container {...getRootProps()}>
       <Sidebar>
-        <Options
-          speed={speed}
-          selectSpeed={setSpeed}
-          resolution={resolution}
-          selectResolution={setResolution}
-        />
+        <div>
+          <TitleContainer>
+            <Title>Options</Title>
+            <AppInfo />
+          </TitleContainer>
+
+          <Options
+            speed={speed}
+            selectSpeed={setSpeed}
+            resolution={resolution}
+            selectResolution={setResolution}
+          />
+        </div>
 
         <ConvertButton
           onClick={convert}
@@ -186,6 +194,18 @@ const PlayerArea = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const TitleContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Title = styled.h1`
+  font-weight: bold;
+  font-size: 1.6rem;
+  color: #333;
 `;
 
 export default App;
