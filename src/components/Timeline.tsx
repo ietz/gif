@@ -1,7 +1,8 @@
 import { Range } from 'react-range';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { clamp, findChangedIndex } from '../utils';
+import { PositionIndicator } from './PositionIndicator';
 
 
 export interface VideoSlice {
@@ -25,12 +26,15 @@ export interface TimelineProps {
 
 const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step, disabled, onMove, onMoveEnd}: TimelineProps) => {
   const values = [slice.start, position, slice.end];
+  const [changingRange, setChangingRange] = useState(false);
 
   return (
     <Range
       disabled={disabled}
       values={values}
       onChange={(newValues) => {
+        setChangingRange(true);
+
         const changed = findChangedIndex(values, newValues);
         if (changed === 1) {
           const newPosition = clamp(newValues[1], slice.start, slice.end);
@@ -47,7 +51,10 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
           onMove(changed === 0 ? newSlice.start : newSlice.end);
         }
       }}
-      onFinalChange={() => onMoveEnd()}
+      onFinalChange={() => {
+        setChangingRange(false);
+        onMoveEnd();
+      }}
       step={step}
       min={0}
       max={length}
@@ -71,7 +78,7 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
       )}
       renderThumb={({props, isDragged, index}) => (
         index === 1
-          ? <PositionIndicatorContainer  {...props}> <PositionIndicatorDragArea> <PositionIndicator /> </PositionIndicatorDragArea> </PositionIndicatorContainer>
+          ? <PositionIndicator isDragging={changingRange} {...props} />
           : <ThumbContainer {...props} ><ThumbCenter isDragged={isDragged} /></ThumbContainer>
       )}
     />
@@ -141,35 +148,5 @@ const ThumbCenter = styled.div<ThumbCenterProps>`
   background-color: ${props => props.isDragged ? 'var(--primary)' : '#999'};
 `;
 
-const PositionIndicatorContainer = styled.div`
-  height: 100%;
-  width: 0;
-  position: relative;
-  
-  display: flex;
-  justify-content: center;
-  
-  transition: 0.07s transform linear;
-`;
-
-const PositionIndicatorDragArea = styled.div`
-  --indicator-size: 0.7rem;
-  --margin-bottom: 0.2rem;
-  --drag-area-padding-top: 1rem;
-  
-  position: absolute;
-  padding-top: var(--drag-area-padding-top);
-  top: calc(-1 * var(--indicator-size) - var(--margin-bottom) - var(--drag-area-padding-top));
-  width: 8rem;
-
-  display: flex;
-  justify-content: center;
-`;
-
-const PositionIndicator = styled.div`
-  border-top: var(--indicator-size) solid var(--primary);
-  border-left: var(--indicator-size) solid transparent;
-  border-right: var(--indicator-size) solid transparent;
-`;
 
 export default Timeline;
