@@ -10,11 +10,13 @@ import { DropHint } from './components/DropHint';
 import { useDropzone } from 'react-dropzone';
 import { ConvertButton } from './components/ConvertButton';
 import { download } from './common/download';
+import { VideoCrop } from './components/CropVideo';
 
 const App = () => {
   const [videoFile, setVideoFile] = useState<VideoFile>();
   const [duration, setDuration] = useState(100);
   const [position, setPosition] = useState(0);
+  const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
   const [loopRegion, setLoopRegion] = useState<VideoSlice>({start: 0, end: 100});
   const [speed, setSpeed] = useState(defaultSpeedOption);
   const [resolution, setResolution] = useState(defaultResolutionOption);
@@ -31,6 +33,7 @@ const App = () => {
         await converter.convert({
           file: videoFile.file,
           slice: loopRegion,
+          crop: crop,
           scaleFactor: resolution.factor,
           playbackRate: speed.factor,
           framerate: 20,
@@ -38,7 +41,7 @@ const App = () => {
         replaceFileExtension(videoFile.file.name, 'gif'),
       )
     }
-  }, [videoFile, converter, resolution, speed, loopRegion]);
+  }, [videoFile, crop, converter, resolution, speed, loopRegion]);
 
   const onDropFile = useCallback((files: File[]) => {
     const file = files[0];
@@ -81,6 +84,8 @@ const App = () => {
             source={videoFile.url}
             playbackRate={speed.factor}
             loopRegion={loopRegion}
+            crop={crop}
+            onChangeCrop={setCrop}
             onTimeUpdate={setPosition}
             onDurationChange={(newDuration) => {
               setDuration(newDuration);

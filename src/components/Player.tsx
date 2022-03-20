@@ -1,4 +1,4 @@
-import { forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, RefObject, useEffect, useImperativeHandle, useRef } from 'react';
 import 'react-image-crop/dist/ReactCrop.css'
 import CropVideo, { VideoCrop } from './CropVideo';
 import { VideoSlice } from './Timeline';
@@ -10,15 +10,15 @@ export interface PlayerProps {
   loopRegion: VideoSlice;
   onTimeUpdate: (time: number) => void;
   onDurationChange: (duration: number) => void,
+  crop: VideoCrop;
+  onChangeCrop: (crop: VideoCrop) => void;
 }
 
 export interface PlayerElement {
   setTime: (time: number) => void;
 }
 
-const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange}, ref) => {
-  const [crop, setCrop] = useState<VideoCrop>({x: 0, y: 0, width: 0, height: 0});
-
+const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop}, ref) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   usePlaybackRate(videoRef, playbackRate);
   useLoopRegion(videoRef, loopRegion);
@@ -40,7 +40,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       autoPlay
       muted
       crop={crop}
-      onChangeCrop={setCrop}
+      onChangeCrop={onChangeCrop}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
       onTimeUpdate={(event) => onTimeUpdate(event.currentTarget.currentTime)}
     />

@@ -1,5 +1,6 @@
 import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
 import { VideoSlice } from '../components/Timeline';
+import { VideoCrop } from '../components/CropVideo';
 
 export class Converter {
   private ffmpeg: FFmpeg;
@@ -30,13 +31,21 @@ export class Converter {
     return URL.createObjectURL(new Blob([data.buffer], {type: 'image/gif'}));
   }
 
-  private getVideoImageFilter = ({framerate, playbackRate, scaleFactor}: ImageOptions) => {
-    return [
+  private getVideoImageFilter = ({framerate, playbackRate, scaleFactor, crop}: ImageOptions) => {
+    const videoFilterParts = []
+
+    if (crop) {
+      videoFilterParts.push(`crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`);
+    }
+
+    videoFilterParts.push(
       `scale=iw*${scaleFactor}:-1`,
       `setpts=PTS/${playbackRate}`,
       `fps=${framerate}`,
       `split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
-    ].join(',')
+    )
+
+    return videoFilterParts.join(',')
   }
 }
 
@@ -49,6 +58,7 @@ interface ImageOptions {
   playbackRate: number;
   scaleFactor: number;
   framerate: number;
+  crop: VideoCrop;
 }
 
 export interface ConvertOptions extends ImageOptions {
