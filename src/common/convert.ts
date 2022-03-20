@@ -12,6 +12,13 @@ export class Converter {
 
   convert = async ({file, slice, framerate, playbackRate, scaleFactor}: ConvertOptions): Promise<string> => {
     this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
+    const videoFilter = [
+      `scale=iw*${scaleFactor}:-1`,
+      `setpts=PTS/${playbackRate}`,
+      `fps=${framerate}`,
+      `split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
+    ].join(',')
+
     await this.ffmpeg.run(
       '-ss',
       slice.start.toString(),
@@ -20,7 +27,7 @@ export class Converter {
       '-i',
       file.name,
       '-vf',
-      `scale=iw*${scaleFactor}:ih*${scaleFactor},setpts=PTS/${playbackRate},fps=${framerate},split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse`,
+      videoFilter,
       '-loop',
       '0',
       'output.gif',
