@@ -33,15 +33,6 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
     }
   }), [videoRef]);
 
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      const listener = () => onTimeUpdate(videoElement.currentTime);
-      videoElement.addEventListener('timeupdate', listener);
-      return () => videoElement.removeEventListener('timeupdate', listener);
-    }
-  }, [onTimeUpdate, videoRef.current]);
-
   return (
     <CropVideo
       ref={videoRef}
@@ -51,6 +42,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       crop={crop}
       onChangeCrop={setCrop}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
+      onTimeUpdate={(event) => onTimeUpdate(event.currentTarget.currentTime)}
     />
   )
 })
