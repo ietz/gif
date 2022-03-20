@@ -78,7 +78,7 @@ interface ImageOptions {
   playbackRate: number;
   scaleFactor: number;
   framerate: number;
-  crop: VideoCrop;
+  crop?: VideoCrop;
 }
 
 export interface ConvertOptions extends ImageOptions {

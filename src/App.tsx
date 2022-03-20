@@ -35,7 +35,7 @@ const App = () => {
         await converter.convert({
           file: videoFile.file,
           slice: loopRegion,
-          crop: crop,
+          crop: crop.width > 0 && crop.height > 0 ? crop : undefined,
           scaleFactor: resolution.factor,
           playbackRate: speed.factor,
           framerate: 20,
