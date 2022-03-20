@@ -71,7 +71,7 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
       )}
       renderThumb={({props, isDragged, index}) => (
         index === 1
-          ? <PositionIndicatorContainer  {...props}> <PositionIndicator /> </PositionIndicatorContainer>
+          ? <PositionIndicatorContainer  {...props}> <PositionIndicatorDragArea> <PositionIndicator /> </PositionIndicatorDragArea> </PositionIndicatorContainer>
           : <ThumbContainer {...props} ><ThumbCenter isDragged={isDragged} /></ThumbContainer>
       )}
     />
@@ -152,13 +152,21 @@ const PositionIndicatorContainer = styled.div`
   transition: 0.07s transform linear;
 `;
 
-const PositionIndicator = styled.div`
+const PositionIndicatorDragArea = styled.div`
   --indicator-size: 0.7rem;
   --margin-bottom: 0.2rem;
+  --drag-area-padding-top: 1rem;
   
   position: absolute;
-  top: calc(-1 * var(--indicator-size) - var(--margin-bottom));
+  padding-top: var(--drag-area-padding-top);
+  top: calc(-1 * var(--indicator-size) - var(--margin-bottom) - var(--drag-area-padding-top));
+  width: 8rem;
 
+  display: flex;
+  justify-content: center;
+`;
+
+const PositionIndicator = styled.div`
   border-top: var(--indicator-size) solid var(--primary);
   border-left: var(--indicator-size) solid transparent;
   border-right: var(--indicator-size) solid transparent;
