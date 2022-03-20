@@ -1,4 +1,4 @@
-import { forwardRef, RefObject, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, RefObject, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import 'react-image-crop/dist/ReactCrop.css'
 import CropVideo, { VideoCrop } from './CropVideo';
 import { VideoSlice } from './Timeline';
@@ -19,8 +19,7 @@ export interface PlayerElement {
 }
 
 const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop}, ref) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  usePlaybackRate(videoRef, playbackRate);
+  const videoRef = useRef<HTMLVideoElement | undefined>(undefined);
   useLoopRegion(videoRef, loopRegion);
 
   useImperativeHandle(ref, () => ({
@@ -33,9 +32,16 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
     }
   }), [videoRef]);
 
+  const handleVideoRefChange = useCallback((video: HTMLVideoElement | null) => {
+    videoRef.current = video ?? undefined;
+    if (video) {
+      video.playbackRate = playbackRate;
+    }
+  }, [videoRef, playbackRate]);
+
   return (
     <CropVideo
-      ref={videoRef}
+      ref={handleVideoRefChange}
       source={source}
       muted
       autoPlay
@@ -48,16 +54,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
   )
 })
 
-const usePlaybackRate = (videoRef: RefObject<HTMLVideoElement>, playbackRate: number) => {
-  // TODO: Fix dependency on videoRef - handle ref changing
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = playbackRate;
-    }
-  }, [videoRef, playbackRate]);
-}
-
-const useLoopRegion = (videoRef: RefObject<HTMLVideoElement>, loopRegion: VideoSlice) => {
+const useLoopRegion = (videoRef: VideoRef, loopRegion: VideoSlice) => {
   useEffect(() => {
     const setPositionInsideLoop = () => {
       const videoElement = videoRef.current;
@@ -70,6 +67,8 @@ const useLoopRegion = (videoRef: RefObject<HTMLVideoElement>, loopRegion: VideoS
     return () => clearInterval(intervalId);
   }, [videoRef, loopRegion]);
 }
+
+type VideoRef = RefObject<HTMLVideoElement | undefined>;
 
 
 export default Player;
