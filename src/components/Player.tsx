@@ -48,11 +48,12 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
 })
 
 const usePlaybackRate = (videoRef: RefObject<HTMLVideoElement>, playbackRate: number) => {
+  // TODO: Fix dependency on videoRef - handle ref changing
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.playbackRate = playbackRate;
     }
-  }, [playbackRate, videoRef.current]);
+  }, [videoRef, playbackRate]);
 }
 
 const useLoopRegion = (videoRef: RefObject<HTMLVideoElement>, loopRegion: VideoSlice) => {
