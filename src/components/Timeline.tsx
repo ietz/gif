@@ -19,9 +19,11 @@ export interface TimelineProps {
   minSliceLength: number;
   step: number;
   disabled?: boolean;
+  onMove: (position: number) => void;
+  onMoveEnd: () => void;
 }
 
-const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step, disabled}: TimelineProps) => {
+const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step, disabled, onMove, onMoveEnd}: TimelineProps) => {
   const values = [slice.start, position, slice.end];
 
   return (
@@ -31,7 +33,9 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
       onChange={(newValues) => {
         const changed = findChangedIndex(values, newValues);
         if (changed === 1) {
-          onPositionChange(clamp(newValues[1], slice.start, slice.end));
+          const newPosition = clamp(newValues[1], slice.start, slice.end);
+          onPositionChange(newPosition);
+          onMove(newPosition);
         } else {
           const newSlice = changed === 0
             ? moveSliceStart(slice, newValues[0], minSliceLength, length)
@@ -39,8 +43,11 @@ const Timeline = ({slice, onSliceChange, position, onPositionChange, length, cla
           onSliceChange(newSlice);
 
           onPositionChange(clamp(position, newSlice.start, newSlice.end));
+
+          onMove(changed === 0 ? newSlice.start : newSlice.end);
         }
       }}
+      onFinalChange={() => onMoveEnd()}
       step={step}
       min={0}
       max={length}

@@ -111,6 +111,18 @@ const App = () => {
           onSliceChange={setLoopRegion}
           position={position}
           onPositionChange={onSeek}
+          onMove={(movePosition) => {
+            if (playerRef.current) {
+              playerRef.current.pause();
+              playerRef.current.setTime(movePosition);
+            }
+          }}
+          onMoveEnd={() => {
+            if (playerRef.current) {
+              playerRef.current.setTime(position);
+              playerRef.current.play();
+            }
+          }}
           length={duration}
           minSliceLength={1}
           step={0.05}

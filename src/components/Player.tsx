@@ -17,6 +17,8 @@ export interface PlayerProps {
 
 export interface PlayerElement {
   setTime: (time: number) => void;
+  play: () => void;
+  pause: () => void;
 }
 
 const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop, maxScale}, ref) => {
@@ -30,7 +32,9 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       }
 
       videoRef.current.currentTime = time;
-    }
+    },
+    play: () => videoRef.current?.play(),
+    pause: () => videoRef.current?.pause(),
   }), [videoRef]);
 
   const handleVideoRefChange = useCallback((video: HTMLVideoElement | null) => {
@@ -51,7 +55,11 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       onChangeCrop={onChangeCrop}
       maxScale={maxScale}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
-      onTimeUpdate={(event) => onTimeUpdate(event.currentTarget.currentTime)}
+      onTimeUpdate={(event) => {
+        if (!event.currentTarget.paused) {
+          onTimeUpdate(event.currentTarget.currentTime);
+        }
+      }}
     />
   )
 })
@@ -60,7 +68,7 @@ const useLoopRegion = (videoRef: VideoRef, loopRegion: VideoSlice) => {
   useEffect(() => {
     const setPositionInsideLoop = () => {
       const videoElement = videoRef.current;
-      if (videoElement && (videoElement.currentTime < loopRegion.start || loopRegion.end <= videoElement.currentTime)) {
+      if (videoElement && !videoElement.paused && (videoElement.currentTime < loopRegion.start || loopRegion.end <= videoElement.currentTime)) {
         videoElement.currentTime = loopRegion.start;
       }
     }
