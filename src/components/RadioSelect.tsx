@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ReactElement } from 'react';
+import { Fragment, ReactElement } from 'react';
 
 export interface RadioOption {
   id: string;
@@ -17,9 +17,8 @@ export const RadioSelect = <T extends RadioOption,>({id, options, selected, onSe
   return (
     <div>
       {options.map(item => (
-        <>
+        <Fragment key={item.id}>
           <HiddenInput
-            key={`${item.id}-input`}
             type="radio"
             name={id}
             id={item.id}
@@ -27,10 +26,10 @@ export const RadioSelect = <T extends RadioOption,>({id, options, selected, onSe
             checked={selected.id === item.id}
             onChange={() => onSelect(item)}
           />
-          <Label htmlFor={item.id} key={`${item.id}-label`}>
+          <Label htmlFor={item.id}>
             {renderContent(item)}
           </Label>
-        </>
+        </Fragment>
       ))}
     </div>
   )
