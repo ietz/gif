@@ -54,7 +54,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
         }
       }, timeUpdateIntervalMs);
     }
-  }, [videoRef, playbackRate, timeUpdateIntervalMs, timeUpdateIntervalHandleRef]);
+  }, [videoRef, playbackRate, onTimeUpdate, timeUpdateIntervalMs, timeUpdateIntervalHandleRef]);
 
   return (
     <CropVideo
