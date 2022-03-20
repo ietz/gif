@@ -1,4 +1,4 @@
-import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
+import { createFFmpeg, fetchFile, FFmpeg, LogCallback } from '@ffmpeg/ffmpeg';
 import { VideoSlice } from '../components/Timeline';
 import { VideoCrop } from '../components/CropVideo';
 
@@ -11,7 +11,10 @@ export class Converter {
 
   load = () => this.ffmpeg.load();
 
-  convert = async ({file, slice, ...imageOptions}: ConvertOptions): Promise<string> => {
+  convert = async ({file, slice, ...imageOptions}: ConvertOptions, onProgress: ProgressCallback): Promise<string> => {
+    const totalFrames = (slice.end - slice.start) * imageOptions.framerate;
+    this.ffmpeg.setLogger(progressLogger(totalFrames, onProgress));
+
     this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
 
     await this.ffmpeg.run(
@@ -49,6 +52,23 @@ export class Converter {
   }
 }
 
+const progressLogger = (totalFrames: number, callback: ProgressCallback): LogCallback => {
+  return ({ message}) => {
+    const currentFrame = parseFrameNumber(message);
+    if (currentFrame !== null) {
+      callback(currentFrame / totalFrames);
+    }
+  }
+}
+
+const parseFrameNumber = (logMessage: string): number | null => {
+  if (logMessage.startsWith('frame=')) {
+    return parseInt(logMessage.slice('frame='.length))
+  } else {
+    return null;
+  }
+}
+
 export const replaceFileExtension = (fileName: string, extension: string): string => {
   const fileStem = fileName.replace(/\.[^/.]+$/, "");
   return `${fileStem}.${extension}`;
@@ -65,3 +85,5 @@ export interface ConvertOptions extends ImageOptions {
   file: File;
   slice: VideoSlice;
 }
+
+export type ProgressCallback = (progress: number) => void;

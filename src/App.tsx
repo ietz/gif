@@ -20,6 +20,7 @@ const App = () => {
   const [loopRegion, setLoopRegion] = useState<VideoSlice>({start: 0, end: 100});
   const [speed, setSpeed] = useState(defaultSpeedOption);
   const [resolution, setResolution] = useState(defaultResolutionOption);
+  const [conversionProgress, setConversionProgress] = useState<number>();
 
   const converter = useMemo(() => {
     const conv = new Converter('https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js');
@@ -29,6 +30,7 @@ const App = () => {
 
   const convert = useCallback(async () => {
     if (videoFile) {
+      setConversionProgress(0);
       download(
         await converter.convert({
           file: videoFile.file,
@@ -37,11 +39,12 @@ const App = () => {
           scaleFactor: resolution.factor,
           playbackRate: speed.factor,
           framerate: 20,
-        }),
+        }, setConversionProgress),
         replaceFileExtension(videoFile.file.name, 'gif'),
-      )
+      );
+      setConversionProgress(undefined);
     }
-  }, [videoFile, crop, converter, resolution, speed, loopRegion]);
+  }, [setConversionProgress, videoFile, crop, converter, resolution, speed, loopRegion]);
 
   const onDropFile = useCallback((files: File[]) => {
     const file = files[0];
@@ -74,7 +77,7 @@ const App = () => {
           selectResolution={setResolution}
         />
 
-        <ConvertButton onClick={convert} />
+        <ConvertButton onClick={convert} progress={conversionProgress} />
       </Sidebar>
 
       <PlayerArea>
