@@ -17,6 +17,7 @@ export class Converter {
 
     this.ffmpeg.FS('writeFile', file.name, await fetchFile(file));
 
+    const outputFileName = 'output.gif';
     await this.ffmpeg.run(
       '-ss',
       slice.start.toString(),
@@ -28,10 +29,15 @@ export class Converter {
       this.getVideoImageFilter(imageOptions),
       '-loop',
       '0',
-      'output.gif',
+      outputFileName,
     );
-    const data = this.ffmpeg.FS('readFile', 'output.gif');
-    return URL.createObjectURL(new Blob([data.buffer], {type: 'image/gif'}));
+    const data = this.ffmpeg.FS('readFile', outputFileName);
+    const blob = new Blob([data.buffer], {type: 'image/gif'})
+
+    this.ffmpeg.FS('unlink', file.name);
+    this.ffmpeg.FS('unlink', outputFileName);
+
+    return URL.createObjectURL(blob);
   }
 
   private getVideoImageFilter = ({framerate, playbackRate, scaleFactor, crop}: ImageOptions) => {
