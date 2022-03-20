@@ -148,6 +148,8 @@ const PositionIndicatorContainer = styled.div`
   
   display: flex;
   justify-content: center;
+  
+  transition: 0.07s transform linear;
 `;
 
 const PositionIndicator = styled.div`

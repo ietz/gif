@@ -8,6 +8,7 @@ export interface PlayerProps {
   source: string;
   playbackRate: number;
   loopRegion: VideoSlice;
+  timeUpdateIntervalMs: number;
   onTimeUpdate: (time: number) => void;
   onDurationChange: (duration: number) => void,
   crop: VideoCrop;
@@ -21,7 +22,7 @@ export interface PlayerElement {
   pause: () => void;
 }
 
-const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop, maxScale}, ref) => {
+const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, timeUpdateIntervalMs, onDurationChange, crop, onChangeCrop, maxScale}, ref) => {
   const videoRef = useRef<HTMLVideoElement | undefined>(undefined);
   useLoopRegion(videoRef, loopRegion);
 
@@ -37,12 +38,23 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
     pause: () => videoRef.current?.pause(),
   }), [videoRef]);
 
+  const timeUpdateIntervalHandleRef = useRef<number>();
   const handleVideoRefChange = useCallback((video: HTMLVideoElement | null) => {
+    if (timeUpdateIntervalHandleRef.current) {
+      clearInterval(timeUpdateIntervalHandleRef.current);
+    }
+
     videoRef.current = video ?? undefined;
     if (video) {
       video.playbackRate = playbackRate;
+
+      timeUpdateIntervalHandleRef.current = window.setInterval(() => {
+        if (!video.paused) {
+          onTimeUpdate(video.currentTime);
+        }
+      }, timeUpdateIntervalMs);
     }
-  }, [videoRef, playbackRate]);
+  }, [videoRef, playbackRate, timeUpdateIntervalMs, timeUpdateIntervalHandleRef]);
 
   return (
     <CropVideo
@@ -55,11 +67,6 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       onChangeCrop={onChangeCrop}
       maxScale={maxScale}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
-      onTimeUpdate={(event) => {
-        if (!event.currentTarget.paused) {
-          onTimeUpdate(event.currentTarget.currentTime);
-        }
-      }}
     />
   )
 })

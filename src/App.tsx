@@ -94,6 +94,7 @@ const App = () => {
             crop={crop}
             onChangeCrop={setCrop}
             maxScale={resolution.factor}
+            timeUpdateIntervalMs={50}
             onTimeUpdate={setPosition}
             onDurationChange={(newDuration) => {
               setDuration(newDuration);
