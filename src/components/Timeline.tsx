@@ -89,7 +89,7 @@ const moveSliceStart = (slice: VideoSlice, target: number, minSliceLength: numbe
 const moveSliceEnd = (slice: VideoSlice, target: number, minSliceLength: number): VideoSlice => {
   const newEnd = Math.max(target, minSliceLength);
   return {
-    start: Math.min(slice.start, target - minSliceLength),
+    start: Math.min(slice.start, newEnd - minSliceLength),
     end: newEnd,
   };
 };
