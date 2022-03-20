@@ -15,9 +15,10 @@ export interface CropVideoProps extends Omit<DetailedHTMLProps<VideoHTMLAttribut
   crop: VideoCrop;
   onChangeCrop: (crop: VideoCrop) => void;
   source: string;
+  maxScale: number;
 }
 
-const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeCrop, source, ...videoProps}, ref) => {
+const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeCrop, source, maxScale, ...videoProps}, ref) => {
   const [videoSize, setVideoSize] = useState<Size>();
 
   const onLoadStart = useMemo(() => combineHandlers(
@@ -40,8 +41,8 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
         onChangeCrop(percentageCropToVideoCrop(newPctCrop as PercentageCrop, videoSize));
       }}
       style={{
-        '--video-width': videoSize ? videoSize.width : undefined,
-        '--video-height': videoSize ? videoSize.height : undefined,
+        '--video-width': videoSize ? maxScale * videoSize.width : undefined,
+        '--video-height': videoSize ? maxScale * videoSize.height : undefined,
       } as CSSVideoSizeStyle}
       renderComponent={
         <Video

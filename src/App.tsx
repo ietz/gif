@@ -93,6 +93,7 @@ const App = () => {
             loopRegion={loopRegion}
             crop={crop}
             onChangeCrop={setCrop}
+            maxScale={resolution.factor}
             onTimeUpdate={setPosition}
             onDurationChange={(newDuration) => {
               setDuration(newDuration);

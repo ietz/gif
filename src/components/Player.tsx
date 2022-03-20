@@ -12,13 +12,14 @@ export interface PlayerProps {
   onDurationChange: (duration: number) => void,
   crop: VideoCrop;
   onChangeCrop: (crop: VideoCrop) => void;
+  maxScale: number;
 }
 
 export interface PlayerElement {
   setTime: (time: number) => void;
 }
 
-const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop}, ref) => {
+const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, loopRegion, onTimeUpdate, onDurationChange, crop, onChangeCrop, maxScale}, ref) => {
   const videoRef = useRef<HTMLVideoElement | undefined>(undefined);
   useLoopRegion(videoRef, loopRegion);
 
@@ -48,6 +49,7 @@ const Player = forwardRef<PlayerElement, PlayerProps>(({source, playbackRate, lo
       loop
       crop={crop}
       onChangeCrop={onChangeCrop}
+      maxScale={maxScale}
       onLoadedMetadata={(event) => onDurationChange(event.currentTarget.duration)}
       onTimeUpdate={(event) => onTimeUpdate(event.currentTarget.currentTime)}
     />
