@@ -18,13 +18,15 @@ export interface TimelineProps {
   className?: string;
   minSliceLength: number;
   step: number;
+  disabled?: boolean;
 }
 
-const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step}: TimelineProps) => {
+const Timeline = ({slice, onSliceChange, position, onPositionChange, length, className, minSliceLength, step, disabled}: TimelineProps) => {
   const values = [slice.start, position, slice.end];
 
   return (
     <Range
+      disabled={disabled}
       values={values}
       onChange={(newValues) => {
         const changed = findChangedIndex(values, newValues);

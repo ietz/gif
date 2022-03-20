@@ -3,14 +3,15 @@ import styled from 'styled-components';
 export interface ConvertButtonProps {
   onClick: () => void;
   progress?: number;
+  disabled?: boolean;
 }
 
-export const ConvertButton = ({onClick, progress}: ConvertButtonProps) => {
+export const ConvertButton = ({onClick, progress, disabled}: ConvertButtonProps) => {
   return (
     <Button
       type='button'
       onClick={onClick}
-      disabled={progress !== undefined}
+      disabled={disabled}
     >
       <ProgressIndicator progress={progress} />
       <ButtonText>Convert</ButtonText>

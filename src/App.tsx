@@ -77,7 +77,11 @@ const App = () => {
           selectResolution={setResolution}
         />
 
-        <ConvertButton onClick={convert} progress={conversionProgress} />
+        <ConvertButton
+          onClick={convert}
+          progress={conversionProgress}
+          disabled={!videoFile || conversionProgress !== undefined}
+        />
       </Sidebar>
 
       <PlayerArea>
@@ -101,6 +105,7 @@ const App = () => {
 
       <Controls>
         <Timeline
+          disabled={!videoFile}
           slice={loopRegion}
           onSliceChange={setLoopRegion}
           position={position}
