@@ -34,8 +34,7 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
 
   return (
     <ReactCropStyled
-      src=""
-      crop={crop && videoSize ? videoCropToPercentageCrop(crop, videoSize) : {}}
+      crop={crop && videoSize ? videoCropToPercentageCrop(crop, videoSize) : undefined}
       onChange={(_, newPctCrop) => {
         if (videoSize === undefined) throw Error('Video size is unknown');
         onChangeCrop(percentageCropToVideoCrop(newPctCrop as PercentageCrop, videoSize));
@@ -44,17 +43,16 @@ const CropVideo = forwardRef<HTMLVideoElement, CropVideoProps>(({crop, onChangeC
         '--video-width': videoSize ? maxScale * videoSize.width : undefined,
         '--video-height': videoSize ? maxScale * videoSize.height : undefined,
       } as CSSVideoSizeStyle}
-      renderComponent={
-        <Video
-          ref={ref}
-          {...videoProps}
-          onLoadStart={onLoadStart}
-          onLoadedMetadata={onLoadedMetadata}
-        >
-          <source src={source} />
-        </Video>
-      }
-    />
+    >
+      <Video
+        ref={ref}
+        {...videoProps}
+        onLoadStart={onLoadStart}
+        onLoadedMetadata={onLoadedMetadata}
+      >
+        <source src={source} />
+      </Video>
+    </ReactCropStyled>
   )
 });
 
