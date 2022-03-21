@@ -2,6 +2,9 @@ import { Info } from 'react-feather';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+
+const GITHUB_URL = 'https://github.com/ietz/gif';
+
 export const AppInfo = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -14,15 +17,15 @@ export const AppInfo = () => {
       <Popover open={isOpen}>
         <p>
           <ParagraphLabel>What?</ParagraphLabel>
-          This website allows you to convert videos into gifs without uploading anything.
+          This tool allows you to edit videos and convert them into gifs without uploading anything.
           Everything happens inside your browser.
-          Check for yourself by using the page while offline, watching your browser's devtools, or reading through the code on <a href="https://github.com/ietz/gif">GitHub</a>.
+          Check for yourself by using the page while offline, watching your browser's devtools, or reading through the code on <a href={GITHUB_URL}>GitHub</a>.
         </p>
 
         <p>
           <ParagraphLabel>Why?</ParagraphLabel>
-          We developed this site because we needed a way to easily edit company-internal recordings.
-          We use it to for screen captures, creating small demos to attach to our our issue tracking system.
+          We developed this tool because we needed a way to easily edit company-internal recordings.
+          We use it to for screen captures, creating small demos to attach to our Jira issues.
           Hint: If you're on Windows, use the pre-installed Game Bar to record a window.
         </p>
 
@@ -33,6 +36,13 @@ export const AppInfo = () => {
           You can also crop the video by clicking and dragging on the preview.
           When you're happy with the results, press the "Convert" button at the bottom of the sidebar.
           The conversion will likely take longer compared to when using a beefy remote server, but that's expected.
+        </p>
+
+        <p>
+          <ParagraphLabel>Where?</ParagraphLabel>
+          This tool lives on <a href={GITHUB_URL}>GitHub</a>.
+          If you encounter any bugs, feel free to create an issue there.
+          The project is MIT licensed, so feel free to use the tool and the code for pretty much whatever you want.
         </p>
       </Popover>
     </div>
