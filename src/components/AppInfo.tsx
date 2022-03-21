@@ -76,8 +76,9 @@ const Popover = styled.div<PopoverProps>`
   padding: 1rem 2rem;
   box-shadow: 0 3px 3px 0 rgb(0 0 0 / 10%), 0 6px 10px 0 rgb(0 0 0 / 15%);
   
+  transition: 0.2s opacity, 0.2s visibility;
   opacity: ${props => props.open ? 1 : 0};
-  transition: 0.2s opacity;
+  visibility: ${props => props.open ? 'visible' : 'hidden'};
 `;
 
 const ParagraphLabel = styled.strong`
