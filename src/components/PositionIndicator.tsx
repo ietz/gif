@@ -1,17 +1,17 @@
 import styled from 'styled-components';
-import React, { DetailedHTMLProps, HTMLAttributes } from 'react';
+import React, { DetailedHTMLProps, forwardRef, HTMLAttributes } from 'react';
 
 export interface PositionIndicatorProps extends Omit<DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>, 'ref'> {
   isDragging: boolean;
 }
 
-export const PositionIndicator = (props: PositionIndicatorProps) => (
-  <Container {...props}>
+export const PositionIndicator = forwardRef<HTMLDivElement, PositionIndicatorProps>((props, ref) => (
+  <Container ref={ref} {...props}>
     <DragArea>
       <Pointer />
     </DragArea>
   </Container>
-)
+));
 
 const Container = styled.div<PositionIndicatorProps>`
   height: 100%;
